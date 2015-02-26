@@ -1,5 +1,7 @@
 package com.example.moneymoney;
 
+import com.facebook.UiLifecycleHelper;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -12,14 +14,48 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class RentPage extends Activity  implements
+import com.facebook.AppEventsLogger;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.Session.NewPermissionsRequest;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
+import com.facebook.widget.ProfilePictureView;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class RentPage extends FragmentActivity  implements
 OnItemLongClickListener,OnItemClickListener {
 	
-
-	ImageButton rent,friend,profile,facebook,setting,electric,water,gas,total;
+	private static final List<String> PERMISSIONS = new ArrayList<String>() {
+        {
+            add("user_friends");
+            add("public_profile");
+        }
+    };
+	ImageButton rent,friend,profile,facebook,setting,electric,water,gas,total,pickFriendsButton;
+	private static final int PICK_FRIENDS_ACTIVITY = 1;
+	String userId;
+    private TextView resultsText;
+    private UiLifecycleHelper lifecycleHelper;
+    boolean pickFriendsWhenSessionOpened;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +83,179 @@ OnItemLongClickListener,OnItemClickListener {
 		gas.setOnClickListener(openGas);
 		total = (ImageButton) findViewById(R.id.imageButtonTotal);
 		total.setOnClickListener(openTotal);
+		resultsText = (TextView) findViewById(R.id.resultsTextView);
+        pickFriendsButton = (ImageButton) findViewById(R.id.imageButtonAddFriend);
+        pickFriendsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                onClickPickFriends();
+            }
+        });
+        
+        lifecycleHelper = new UiLifecycleHelper(this, new Session.StatusCallback() {
+            @Override
+            public void call(Session session, SessionState state, Exception exception) {
+            	Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+
+      	            // callback after Graph API response with user object
+      	            @Override
+      	            public void onCompleted(GraphUser user, Response response) {
+      	              if (user != null) {
+      	                
+      	                userId = user.getId();
+
+      	              }
+      	            }
+      	          });
+            	onSessionStateChanged(session, state, exception);
+            }
+        });
+        lifecycleHelper.onCreate(savedInstanceState);
+
+        ensureOpenSession();
+//        Session.openActiveSession(this, true, new Session.StatusCallback() {
+//
+//  	      // callback when session changes state
+//  	      @Override
+//  	      public void call(Session session, SessionState state, Exception exception) {
+//  	        if (session.isOpened()) {
+//
+//  	          // make request to the /me API
+//  	          Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+//
+//  	            // callback after Graph API response with user object
+//  	            @Override
+//  	            public void onCompleted(GraphUser user, Response response) {
+//  	              if (user != null) {
+//  	                
+//  	                userId = user.getId();
+//
+//  	              }
+//  	            }
+//  	          });
+//  	        }
+//  	      }
+//  	    });
 	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case PICK_FRIENDS_ACTIVITY:
+                displaySelectedFriends(resultCode);
+                break;
+            default:
+                Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
+                break;
+        }
+    }
+
+    private boolean ensureOpenSession() {
+        if (Session.getActiveSession() == null ||
+                !Session.getActiveSession().isOpened()) {
+            Session.openActiveSession(
+                    this, 
+                    true, 
+                    PERMISSIONS,
+                    new Session.StatusCallback() {
+                        @Override
+                        public void call(Session session, SessionState state, Exception exception) {
+                            onSessionStateChanged(session, state, exception);
+                        }
+                    });
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean sessionHasNecessaryPerms(Session session) {
+        if (session != null && session.getPermissions() != null) {
+            for (String requestedPerm : PERMISSIONS) {
+                if (!session.getPermissions().contains(requestedPerm)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    private List<String> getMissingPermissions(Session session) {
+        List<String> missingPerms = new ArrayList<String>(PERMISSIONS);
+        if (session != null && session.getPermissions() != null) {
+            for (String requestedPerm : PERMISSIONS) {
+                if (session.getPermissions().contains(requestedPerm)) {
+                    missingPerms.remove(requestedPerm);
+                }
+            }
+        }
+        return missingPerms;
+    }
+
+    private void onSessionStateChanged(final Session session, SessionState state, Exception exception) {
+        if (state.isOpened() && !sessionHasNecessaryPerms(session)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(R.string.need_perms_alert_text);
+            builder.setPositiveButton(
+                    R.string.need_perms_alert_button_ok, 
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            session.requestNewReadPermissions(
+                                    new NewPermissionsRequest(
+                                            RentPage.this, 
+                                            getMissingPermissions(session)));
+                        }
+                    });
+            builder.setNegativeButton(
+                    R.string.need_perms_alert_button_quit,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    });
+            builder.show();
+        } else if (pickFriendsWhenSessionOpened && state.isOpened()) {
+            pickFriendsWhenSessionOpened = false;
+
+            startPickFriendsActivity();
+        }
+    }
+
+    private void displaySelectedFriends(int resultCode) {
+        String results = "";
+        FriendPickerApplication application = (FriendPickerApplication) getApplication();
+
+        Collection<GraphUser> selection = application.getSelectedUsers();
+        if (selection != null && selection.size() > 0) {
+            ArrayList<String> names = new ArrayList<String>();
+            for (GraphUser user : selection) {
+                names.add(user.getName());
+            }
+            results = TextUtils.join(", ", names);
+        } else {
+            results = "<No friends selected>";
+        }
+
+        resultsText.setText(results);
+    }
+
+    private void onClickPickFriends() {
+        startPickFriendsActivity();
+    }
+
+    private void startPickFriendsActivity() {
+        if (ensureOpenSession()) {
+            Intent intent = new Intent(this, PickerActivity.class);
+            // Note: The following line is optional, as multi-select behavior is the default for
+            // FriendPickerFragment. It is here to demonstrate how parameters could be passed to the
+            // friend picker if single-select functionality was desired, or if a different user ID was
+            // desired (for instance, to see friends of a friend).
+            PickerActivity.populateParameters(intent, userId, true, true);
+            startActivityForResult(intent, PICK_FRIENDS_ACTIVITY);
+        } else {
+            pickFriendsWhenSessionOpened = true;
+        }
+    }
 	
 	private Button.OnClickListener openElectric = new Button.OnClickListener() {
 		@Override

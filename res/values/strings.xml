@@ -9,7 +9,11 @@
     <string name="title_activity_facebook">Facebook</string>
     <string name="title_activity_setting">Setting</string>
     <string name="facebook_app_id">1547265538858226</string>
-    
-    
+    <string name="error_dialog_title">Error</string>
+    <string name="error_dialog_button_text">OK</string>
+    <string name="title_activity_picker">PickerActivity</string>
+    <string name="need_perms_alert_text">In order to pick your friends you need to accept all the permissions on the following page.</string>
+    <string name="need_perms_alert_button_ok">OK</string>
+    <string name="need_perms_alert_button_quit">Quit</string>
 
 </resources>

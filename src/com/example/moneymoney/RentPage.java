@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -50,7 +51,7 @@ OnItemLongClickListener,OnItemClickListener {
             add("public_profile");
         }
     };
-	ImageButton rent,friend,profile,facebook,setting,electric,water,gas,total,pickFriendsButton;
+	ImageButton rent,friend,profile,facebook,setting,electric,water,gas,total,pickFriendsButton,AddFriendManual;
 	private static final int PICK_FRIENDS_ACTIVITY = 1;
 	String userId;
     private TextView resultsText;
@@ -83,6 +84,7 @@ OnItemLongClickListener,OnItemClickListener {
 		gas.setOnClickListener(openGas);
 		total = (ImageButton) findViewById(R.id.imageButtonTotal);
 		total.setOnClickListener(openTotal);
+		AddFriendManual = (ImageButton) findViewById(R.id.imageButtonAddFriendManual);
 		resultsText = (TextView) findViewById(R.id.resultsTextView);
         pickFriendsButton = (ImageButton) findViewById(R.id.imageButtonAddFriend);
         pickFriendsButton.setOnClickListener(new View.OnClickListener() {
@@ -94,47 +96,37 @@ OnItemLongClickListener,OnItemClickListener {
         lifecycleHelper = new UiLifecycleHelper(this, new Session.StatusCallback() {
             @Override
             public void call(Session session, SessionState state, Exception exception) {
-            	Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-
-      	            // callback after Graph API response with user object
-      	            @Override
-      	            public void onCompleted(GraphUser user, Response response) {
-      	              if (user != null) {
-      	                
-      	                userId = user.getId();
-
-      	              }
-      	            }
-      	          });
+                
             	onSessionStateChanged(session, state, exception);
             }
         });
         lifecycleHelper.onCreate(savedInstanceState);
 
         ensureOpenSession();
-//        Session.openActiveSession(this, true, new Session.StatusCallback() {
-//
-//  	      // callback when session changes state
-//  	      @Override
-//  	      public void call(Session session, SessionState state, Exception exception) {
-//  	        if (session.isOpened()) {
-//
-//  	          // make request to the /me API
-//  	          Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-//
-//  	            // callback after Graph API response with user object
-//  	            @Override
-//  	            public void onCompleted(GraphUser user, Response response) {
-//  	              if (user != null) {
-//  	                
-//  	                userId = user.getId();
-//
-//  	              }
-//  	            }
-//  	          });
-//  	        }
-//  	      }
-//  	    });
+        Session.openActiveSession(this, true, new Session.StatusCallback() {
+
+  	      // callback when session changes state
+  	      @Override
+  	      public void call(Session session, SessionState state, Exception exception) {
+  	        if (session.isOpened()) {
+
+  	          // make request to the /me API
+  	          Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+
+  	            // callback after Graph API response with user object
+  	            @Override
+  	            public void onCompleted(GraphUser user, Response response) {
+  	              if (user != null) {
+  	                
+  	                userId = user.getId();
+  	                Toast toast = Toast.makeText(RentPage.this, userId, Toast.LENGTH_SHORT);
+  	                toast.show();
+  	              }
+  	            }
+  	          });
+  	        }
+  	      }
+  	    });
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {

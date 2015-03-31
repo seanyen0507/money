@@ -51,7 +51,6 @@ OnItemLongClickListener,OnItemClickListener {
 	public String db_table = "Sample";
 	private Database dbtest = null;
 	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

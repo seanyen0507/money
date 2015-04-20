@@ -7,13 +7,21 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+<<<<<<< HEAD
+=======
+import android.widget.PopupWindow;
+>>>>>>> master
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -21,6 +29,10 @@ import android.widget.Toast;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+<<<<<<< HEAD
+=======
+import android.graphics.drawable.BitmapDrawable;
+>>>>>>> master
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
@@ -37,11 +49,19 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
+<<<<<<< HEAD
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+=======
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+>>>>>>> master
 public class RentPage extends FragmentActivity  implements
 OnItemLongClickListener,OnItemClickListener {
 	
@@ -258,6 +278,7 @@ OnItemLongClickListener,OnItemClickListener {
 			water.setImageResource(R.drawable.rent_water);
 			gas.setImageResource(R.drawable.rent_gas);
 			total.setImageResource(R.drawable.rent_total);
+			openPopupWindow(view,"Electric",electric);
 		}
 	};
 	
@@ -270,6 +291,7 @@ OnItemLongClickListener,OnItemClickListener {
 			water.setImageResource(R.drawable.rent_water_click);
 			gas.setImageResource(R.drawable.rent_gas);
 			total.setImageResource(R.drawable.rent_total);
+			openPopupWindow(view,"Water",water);
 		}
 	};
 	
@@ -282,6 +304,7 @@ OnItemLongClickListener,OnItemClickListener {
 			water.setImageResource(R.drawable.rent_water);
 			gas.setImageResource(R.drawable.rent_gas_click);
 			total.setImageResource(R.drawable.rent_total);
+			openPopupWindow(view,"Gas",gas);
 		}
 	};
 	
@@ -352,6 +375,31 @@ OnItemLongClickListener,OnItemClickListener {
 			finish_page();
 		}
 	};
+	
+	@SuppressWarnings("deprecation")
+	private void openPopupWindow(View v, final String s, ImageButton b){
+		LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+		final View popupView = layoutInflater.inflate(R.layout.popup, null);
+		final PopupWindow popupWindow = new PopupWindow(popupView, 600 , LayoutParams.WRAP_CONTENT);
+		TextView k = (TextView) popupView.findViewById(R.id.kind);
+		k.setText(s);
+		Button buttonClose = (Button)popupView.findViewById(R.id.closepopupwindow);
+		buttonClose.setOnClickListener(new Button.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				EditText value = (EditText) popupView.findViewById(R.id.value);
+				String t = value.getText()+" has be input as "+s;
+				Toast toast = Toast.makeText(RentPage.this, t, Toast.LENGTH_SHORT);
+	            toast.show();
+				popupWindow.dismiss();
+		}});
+		
+		popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
+//		popupWindow.showAsDropDown(b);
+		popupWindow.setFocusable(true);
+		popupWindow.update();
+	}
     
 	public void finish_page(){
 		RentPage.this.finish();

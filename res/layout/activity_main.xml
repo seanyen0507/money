@@ -19,13 +19,11 @@
             android:orientation="vertical" >
         </LinearLayout>
 
-       
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="bottom" >
+            android:gravity="bottom"
+            android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/textView1"
@@ -34,66 +32,60 @@
                 android:text="TextView" />
 
             <com.facebook.widget.ProfilePictureView
-	            android:id="@+id/selection_profile_pic"
-	            android:layout_height="wrap_content"
-	            android:layout_width="wrap_content"
-	            android:layout_gravity="center"
-	            android:gravity="center_horizontal"
-	            facebook:preset_size="large" />
-            
-           <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:background="#FFF5EB"
-            android:orientation="horizontal"
-            android:gravity="center" >
+                android:id="@+id/selection_profile_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                facebook:preset_size="large" />
 
-               <ImageButton
-                   android:id="@+id/imageButtonRent"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="#00ff0000"
-                   android:layout_weight="1"
-                   android:src="@drawable/ic_rent" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:background="#FFF5EB"
+                android:gravity="center"
+                android:orientation="horizontal" >
 
-               <ImageButton
-                   android:id="@+id/imageButtonFriend"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="#00ff0000"
-                   android:layout_weight="1"
-                   android:src="@drawable/ic_friend" />
+                <ImageButton
+                    android:id="@+id/imageButtonRent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#00ff0000"
+                    android:src="@drawable/ic_rent" />
 
-               <ImageButton
-                   android:id="@+id/imageButtonProfile"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="#00ff0000"
-                   android:layout_weight="1"
-                   android:src="@drawable/ic_user_click" />
+                <ImageButton
+                    android:id="@+id/imageButtonFriend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#00ff0000"
+                    android:src="@drawable/ic_friend" />
 
+                <ImageButton
+                    android:id="@+id/imageButtonProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#00ff0000"
+                    android:src="@drawable/ic_user_click" />
 
-               <ImageButton
-                   android:id="@+id/imageButtonFacebook"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="#00ff0000"
-                   android:layout_weight="1"
-                   android:src="@drawable/ic_facebook" />
-              
-               <ImageButton
-                   android:id="@+id/imageButtonSetting"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:background="#00ff0000"
-                   android:layout_weight="1"
-                   android:src="@drawable/ic_setting" />
+                <ImageButton
+                    android:id="@+id/imageButtonFacebook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#00ff0000"
+                    android:src="@drawable/ic_facebook" />
 
-       	   </LinearLayout>
-            
-            
-            
-            
+                <ImageButton
+                    android:id="@+id/imageButtonSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#00ff0000"
+                    android:src="@drawable/ic_setting" />
+            </LinearLayout>
         </LinearLayout>
      
     </LinearLayout>

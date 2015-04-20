@@ -10,8 +10,10 @@ import java.net.URLConnection;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -45,7 +47,9 @@ public class MainActivity extends Activity implements
 OnItemLongClickListener,OnItemClickListener {
 	
 	ImageButton rent,friend,profile,facebook,setting;
-	
+	public String db_name = "SampleList";
+	public String db_table = "Sample";
+	private Database dbtest = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +57,7 @@ OnItemLongClickListener,OnItemClickListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
+		dbtest = new Database(this); 
 		rent = (ImageButton) findViewById(R.id.imageButtonRent);
 		rent.setOnClickListener(openRent);
 		friend = (ImageButton) findViewById(R.id.imageButtonFriend);
@@ -88,7 +92,7 @@ OnItemLongClickListener,OnItemClickListener {
 	                final ProfilePictureView user_pic=(ProfilePictureView) findViewById(R.id.selection_profile_pic);
 	                
 	                user_pic.setProfileId(user.getId());
-
+	                add(user.getId(), user.getName());
 	              }
 	            }
 	          });
@@ -97,6 +101,17 @@ OnItemLongClickListener,OnItemClickListener {
 	    });		
 	}
 
+	
+	private void add(String  userid, String name){
+        SQLiteDatabase db = dbtest.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("_USER", userid.toString());
+        values.put("_NAME", name.toString());
+        long check = db.insert("Sample", null, values);
+        if (check == -1){
+        	Toast.makeText(this,"·s¼W¥¢±Ñ¡I", Toast.LENGTH_SHORT).show();
+        }
+    }
 	 @Override
 	  public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	      super.onActivityResult(requestCode, resultCode, data);

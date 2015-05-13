@@ -20,6 +20,8 @@ OnItemLongClickListener,OnItemClickListener {
 	
 	ImageButton rent,friend,profile,facebook,setting;
 	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -90,7 +90,7 @@ OnItemLongClickListener,OnItemClickListener {
 		gas.setOnClickListener(openGas);
 		total = (ImageButton) findViewById(R.id.imageButtonTotal);
 		total.setOnClickListener(openTotal);
-		AddFriendManual = (ImageButton) findViewById(R.id.imageButtonAddFriendManual);
+//		AddFriendManual = (ImageButton) findViewById(R.id.imageButtonAddFriend);
 		resultsText = (TextView) findViewById(R.id.resultsTextView);
         pickFriendsButton = (ImageButton) findViewById(R.id.imageButtonAddFriend);
         pickFriendsButton.setOnClickListener(new View.OnClickListener() {

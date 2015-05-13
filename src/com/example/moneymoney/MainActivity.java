@@ -7,6 +7,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -17,9 +21,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 //import android.service.textservice.SpellCheckerService.Session;
 //import android.service.textservice.SpellCheckerService.Session;
 import android.view.LayoutInflater;
@@ -32,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -41,7 +48,7 @@ import android.os.Build;
 import com.facebook.*;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.ProfilePictureView;
-//import com.facebook.model.GraphUser;
+import com.facebook.model.GraphUser;
 
 public class MainActivity extends Activity implements
 OnItemLongClickListener,OnItemClickListener {
@@ -50,9 +57,13 @@ OnItemLongClickListener,OnItemClickListener {
 	public String db_name = "SampleList";
 	public String db_table = "Sample";
 	private Database dbtest = null;
+	public String user_id="";
+	public String friendlist="";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+		
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
@@ -66,15 +77,14 @@ OnItemLongClickListener,OnItemClickListener {
 		facebook.setOnClickListener(openFacebook);
 		setting = (ImageButton) findViewById(R.id.imageButtonSetting);
 		setting.setOnClickListener(openSetting);
-	
-
+		Button button1;
 		
 		// start Facebook Login
 	    Session.openActiveSession(this, true, new Session.StatusCallback() {
 
 	      // callback when session changes state
 	      @Override
-	      public void call(Session session, SessionState state, Exception exception) {
+	      public void call(final Session session, SessionState state, Exception exception) {
 	        if (session.isOpened()) {
 
 	          // make request to the /me API
@@ -83,6 +93,8 @@ OnItemLongClickListener,OnItemClickListener {
 	            // callback after Graph API response with user object
 	            @Override
 	            public void onCompleted(GraphUser user, Response response) {
+	            	user_id=user.getId().toString();
+	            	
 	              if (user != null) {
 	                TextView welcome = (TextView) findViewById(R.id.textView1);
 	                welcome.setText("Hello " + user.getName() + "!");
@@ -94,13 +106,56 @@ OnItemLongClickListener,OnItemClickListener {
 	                user_pic.setProfileId(user.getId());
 	                add(user.getId(), user.getName());
 	              }
+	              
+	              
+	              
+	              /* make the API call */
+		          new Request(
+		              session,
+		              "/"+user_id+"/taggable_friends",
+		              null,
+		              HttpMethod.GET,
+		              new Request.Callback() {
+		                  public void onCompleted(Response response) {
+
+		                	  
+		                	  String LOG_TAG = null;
+							/* handle the result */
+		                      //TEST
+//		                	  Toast toast = Toast.makeText(MainActivity.this, user_id , Toast.LENGTH_SHORT);
+//		      	              toast.show();
+		                      
+		                      
+		                      friendlist=response.toString();
+		                     
+//		      	            Log.e(LOG_TAG,"Members: " + friendlist);
+		                      
+		                      //test ÁÐÓ¡È«²¿
+		                      
+//		                      ScrollView friendlists = (ScrollView) findViewById(R.id.scrollView1);
+//		                      TextView a111 = (TextView) findViewById(R.id.textView2);
+//		  	                a111.setText(friendlist);
+
+//		                	  Log.e(LOG_TAG,"Members: " + response.toString());
+		                  
+		                  }
+		              }
+		          ).executeAsync();
 	            }
 	          });
+	
+	        		  
+	          
+	        		  
 	        }
 	      }
 	    });		
-	}
-
+		}
+		
+	
+	
+	
+	
 	
 	private void add(String  userid, String name){
         SQLiteDatabase db = dbtest.getWritableDatabase();
@@ -118,7 +173,18 @@ OnItemLongClickListener,OnItemClickListener {
 	      Session.getActiveSession().onActivityResult(this, requestCode, resultCode, data);
 	  }
 		
-		
+	 public Button.OnClickListener openButton1 = new Button.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				
+				vibrate();
+//				Toast toast = Toast.makeText(MainActivity.this, user_id , Toast.LENGTH_SHORT);
+//	            toast.show();
+				
+				
+				
+			}
+		};	
 	
 	public Button.OnClickListener openRent = new Button.OnClickListener() {
 		@Override
